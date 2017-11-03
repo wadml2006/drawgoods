@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true">
+	<property name="USER_HOME" value="${WORK}" />
+	
+	<property name="DEFAULT_FILE_NAME" value="DEFAULT" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyyMMdd HH:mm:ss SSS}[%thread][%level][%X{LINE}]-%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+
+	<!-- =========================================公用配置Start=============================== -->
+	<appender name="DEFAULT-INFO"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>log</File>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator>
+				<expression>!message.contains("LOG-IDX")
+					&amp;&amp;(level>=INFO)
+					&amp;&amp;(event.getThreadName().indexOf("AUTO")==-1)
+	        	 </expression>
+			</evaluator>
+			<OnMatch>ACCEPT</OnMatch>
+			<OnMismatch>DENY</OnMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-INFO%d{yyyyMMdd}.log
+			</FileNamePattern>
+			<MaxHistory>90</MaxHistory>
+		</rollingPolicy>
+		<layout>
+			<Pattern>%d{yyyyMMdd HH:mm:ss SSS}[%thread][%level][%X{LINE}]-%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+
+	<appender name="DEFAULT-ERROR"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-ERROR.log</File>
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator>
+				<expression>(level==ERROR)
+					&amp;&amp;(event.getThreadName().indexOf("AUTO")==-1)
+	        	</expression>
+			</evaluator>
+			<OnMatch>ACCEPT</OnMatch>
+			<OnMismatch>DENY</OnMismatch>
+		</filter>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${USER_HOME}/logs/${DEFAULT_FILE_NAME}-ERROR%d{yyyyMMdd}.log
+			</FileNamePattern>
+			<MaxHistory>90</MaxHistory>
+		</rollingPolicy>
+		<layout>
+			<Pattern>%d{yyyyMMdd HH:mm:ss SSS} [%thread][%level][%X{LINE}]-%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+ 
+	
+	<root level="DEBUG">
+		<appender-ref ref="DEFAULT-INFO" />
+		<appender-ref ref="DEFAULT-ERROR" />
+		
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
+
